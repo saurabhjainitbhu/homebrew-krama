@@ -24,8 +24,8 @@ class Krama < Formula
     python = "python3.12"
     system python, "-m", "venv", libexec/"venv"
     venv_pip = libexec/"venv/bin/pip"
-    system venv_pip, "install", "pip", "--upgrade", "--quiet"
-    system venv_pip, "install", *buildpath.glob("packages/*"), "--quiet"
+    system venv_pip, "install", "pip", "setuptools", "wheel", "--upgrade", "--quiet"
+    system venv_pip, "install", *buildpath.glob("packages/*")
 
     # Step 2: Copy all non-Python assets into libexec.
     %w[config .opencode Setup templates scripts tasks archive].each do |dir|
