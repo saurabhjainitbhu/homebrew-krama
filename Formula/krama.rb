@@ -7,8 +7,8 @@
 
 class Krama < Formula
   desc "Agent-driven iOS development pipeline - automated issue processing with AI agents"
-  homepage "https://github.com/kidzofy/AgentHarness"
-  url "https://github.com/kidzofy/AgentHarness/releases/download/v#{version}/krama-#{version}.tar.gz"
+  homepage "https://github.com/saurabhjainitbhu/AgentHarness"
+  url "https://github.com/saurabhjainitbhu/AgentHarness/releases/download/v#{version}/krama-#{version}.tar.gz"
   license "MIT"
 
   # When a release is cut, replace this with the actual SHA256 of the tarball.
