@@ -6,6 +6,8 @@
 # REQ-0-SESSION_PLACEHOLDER
 
 class Krama < Formula
+  include Language::Python::Virtualenv
+
   desc "Agent-driven iOS development pipeline - automated issue processing with AI agents"
   homepage "https://github.com/saurabhjainitbhu/AgentHarness"
   version "0.1.1"
