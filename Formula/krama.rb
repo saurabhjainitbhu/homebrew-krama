@@ -37,6 +37,7 @@ class Krama < Formula
     (libexec/"bin").mkpath
     (libexec/"bin/krama").write <<~SH
       #!/bin/bash
+      export KRAMA_ASSETS="#{libexec}"
       exec "#{libexec}/venv/bin/python" -m krama.cli.app "$@"
     SH
     chmod 0755, libexec/"bin/krama"
