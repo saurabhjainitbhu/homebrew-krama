@@ -8,11 +8,11 @@
 class KramaDev < Formula
   desc "Krama development build - agent-driven iOS development pipeline (auto-updated)"
   homepage "https://github.com/saurabhjainitbhu/AgentHarness"
-  version "0.1.0.dev.b48c3b3"
+  version "0.1.0.dev.9d5627a"
   url "https://github.com/saurabhjainitbhu/homebrew-krama/releases/download/dev/krama-#{version}.tar.gz"
   license "MIT"
 
-  sha256 "186e05f0214dae192986674a8a175454fc51461f99d8e7be45dbd6f4f22bb514"
+  sha256 "553fb8e049f8963cbd97ac90905e7fbb5cf1542febedfbcb020f9649a7f8ba47"
 
   depends_on "python@3.12"
   depends_on "gh"
