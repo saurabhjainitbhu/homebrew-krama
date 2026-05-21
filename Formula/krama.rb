@@ -6,15 +6,12 @@
 # REQ-0-SESSION_PLACEHOLDER
 
 class Krama < Formula
-  include Language::Python::Virtualenv
-
   desc "Agent-driven iOS development pipeline - automated issue processing with AI agents"
   homepage "https://github.com/saurabhjainitbhu/AgentHarness"
   version "0.1.1"
   url "https://github.com/saurabhjainitbhu/homebrew-krama/releases/download/v#{version}/krama-#{version}.tar.gz"
   license "MIT"
 
-  # When a release is cut, replace this with the actual SHA256 of the tarball.
   sha256 "ed1ea8f29b204ee538ae64511b49878c7f41632b8f1ccb0cced417b578cb7e15"
 
   depends_on "python@3.12"
@@ -23,10 +20,12 @@ class Krama < Formula
   depends_on "node"
 
   def install
-    # Step 1: Create a virtualenv and install all monorepo packages.
-    # pip resolves inter-package dependencies automatically.
-    venv = virtualenv_create(libexec, "python3.12")
-    venv.pip_install buildpath.glob("packages/*")
+    # Step 1: Create a venv and install all monorepo packages.
+    python = "python3.12"
+    system python, "-m", "venv", libexec/"venv"
+    venv_pip = libexec/"venv/bin/pip"
+    system venv_pip, "install", "pip", "--upgrade", "--quiet"
+    system venv_pip, "install", *buildpath.glob("packages/*"), "--quiet"
 
     # Step 2: Copy all non-Python assets into libexec.
     %w[config .opencode Setup templates scripts tasks archive].each do |dir|
@@ -34,38 +33,14 @@ class Krama < Formula
       cp_r src, libexec/dir if src.exist?
     end
 
-    # Step 3: Write a self-contained entry script that uses the libexec layout.
-    # This mirrors the dev-mode krama script but resolves paths from libexec.
-    (libexec/"krama").write <<~PYTHON
-      #!/usr/bin/env python3
-      """Krama CLI entry point (Homebrew installed)."""
-      import sys
-      import os
-
-      _base = os.path.dirname(os.path.abspath(__file__))
-      _pkg_dirs = [
-          "krama-cli", "krama-engine", "krama-config",
-          "krama-git", "krama-adapters", "krama-db", "krama-providers",
-      ]
-      for name in _pkg_dirs:
-          sys.path.insert(0, os.path.join(_base, "packages", name, "src"))
-
-      try:
-          from krama.cli.app import main
-      except ImportError as e:
-          print(
-              f"Error: Could not import Krama CLI modules. "
-              f"Ensure the formula was built correctly.\\n  {e}",
-              file=sys.stderr,
-          )
-          sys.exit(1)
-
-      main()
-    PYTHON
-    (libexec/"krama").chmod 0o755
-
-    # Symlink into bin so __file__ resolves to the real libexec path.
-    bin.install_symlink libexec/"krama" => "krama"
+    # Step 3: Install the krama wrapper script.
+    (libexec/"bin").mkpath
+    (libexec/"bin/krama").write <<~SH
+      #!/bin/bash
+      exec "#{libexec}/venv/bin/python" -m krama.cli.app "$@"
+    SH
+    chmod 0755, libexec/"bin/krama"
+    bin.install_symlink libexec/"bin/krama" => "krama"
   end
 
   def caveats
