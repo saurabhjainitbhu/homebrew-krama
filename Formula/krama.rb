@@ -8,11 +8,11 @@
 class Krama < Formula
   desc "Agent-driven iOS development pipeline - automated issue processing with AI agents"
   homepage "https://github.com/saurabhjainitbhu/AgentHarness"
-  version "0.1.6"
+  version "0.1.7"
   url "https://github.com/saurabhjainitbhu/homebrew-krama/releases/download/v#{version}/krama-#{version}.tar.gz"
   license "MIT"
 
-  sha256 "827cd72de40e3264039e3f4004c46dc7f410b01af529fdf2b1260a6471624963"
+  sha256 "5b934a1f43c1e1bcc960d5630a03d8b21141b2f3e8a838360b54f7ece6e61cb6"
 
   depends_on "python@3.12"
   depends_on "gh"
@@ -33,20 +33,21 @@ class Krama < Formula
       cp_r src, libexec/dir if src.exist?
     end
 
-    # Step 3: Install the krama wrapper script (pure Python, no -m invocation).
+    # Step 3: Install the krama wrapper script.
     (libexec/"bin").mkpath
-    (libexec/"bin/krama").write <<~PYTHON
-      #!/usr/bin/env python3
-      \"\"\"Krama CLI entry point.\"\"\"
-      import os, sys
-      _libexec = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-      os.environ.setdefault("KRAMA_ASSETS", _libexec)
-      _site = os.path.join(_libexec, "venv", "lib",
-          f"python{sys.version_info.major}.{sys.version_info.minor}", "site-packages")
-      sys.path.insert(0, _site)
+    (libexec/"bin/krama").write <<~SH
+      #!/bin/bash
+      export KRAMA_ASSETS="#{libexec}"
+      exec "#{libexec}/venv/bin/python" -c "
+      import sys, os
+      p = '#{libexec}'
+      for d in ['krama-cli','krama-engine','krama-config','krama-git','krama-adapters','krama-db','krama-providers']:
+          sys.path.insert(0, os.path.join(p, 'packages', d, 'src'))
+      os.environ.setdefault('KRAMA_ASSETS', p)
       from krama.cli.app import main
       main()
-    PYTHON
+      " "$@"
+    SH
     chmod 0755, libexec/"bin/krama"
     bin.install_symlink libexec/"bin/krama" => "krama"
   end
