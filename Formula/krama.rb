@@ -12,7 +12,7 @@ class Krama < Formula
   license "MIT"
 
   # When a release is cut, replace this with the actual SHA256 of the tarball.
-  sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+  sha256 "9f44d778c5e9de257325577cbad86ed806ba77f2ad4e80528df20ce863706ec8"
 
   depends_on "python@3.12"
   depends_on "gh"
